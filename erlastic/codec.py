@@ -59,6 +59,19 @@ class ErlangTermDecoder(object):
         atom = buf[offset+1:offset+1+atom_len]
         return self.convert_atom(atom), offset+atom_len+1
 
+    def decode_118(self, buf, offset):
+        """ATOM_UTF8_EXT"""
+        atom_len = struct.unpack(">H", buf[offset:offset+2])[0]
+        atom = buf[offset+2:offset+2+atom_len]
+        return self.convert_atom_utf8(atom), offset+atom_len+2
+
+    def decode_119(self, buf, offset):
+        """SMALL_ATOM_UTF8_EXT"""
+        atom_len = struct.unpack(">H", buf[offset:offset+2])[0]
+        atom = buf[offset+2:offset+2+atom_len]
+        return self.convert_atom_utf8(atom), offset+atom_len+2
+
+
     def decode_104(self, buf, offset):
         """SMALL_TUPLE_EXT"""
         arity = buf[offset]
@@ -207,6 +220,16 @@ class ErlangTermDecoder(object):
         elif atom == b"none":
             return None
         return Atom(atom.decode('latin-1'))
+
+    def convert_atom_utf8(self, atom):
+        if atom == b"true":
+            return True
+        elif atom == b"false":
+            return False
+        elif atom == b"none":
+            return None
+        return Atom(atom.decode('utf-8'))
+
 
 class ErlangTermEncoder(object):
     def __init__(self, encoding="utf-8", unicode_type="binary"):

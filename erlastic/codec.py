@@ -67,9 +67,9 @@ class ErlangTermDecoder(object):
 
     def decode_119(self, buf, offset):
         """SMALL_ATOM_UTF8_EXT"""
-        atom_len = struct.unpack(">H", buf[offset:offset+2])[0]
-        atom = buf[offset+2:offset+2+atom_len]
-        return self.convert_atom_utf8(atom), offset+atom_len+2
+        atom_len = buf[offset]
+        atom = buf[offset+1:offset+1+atom_len]
+        return self.convert_atom_utf8(atom), offset+atom_len+1
 
 
     def decode_104(self, buf, offset):
